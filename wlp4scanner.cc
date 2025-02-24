@@ -2,12 +2,9 @@
 #include <string>
 #include <cctype>
 #include <map>
-#include <sstream>
-#include <cstdlib>
 
-void formatError(const std::string &line) {
-    std::cerr << line << std::endl;
-    std::cerr << "ERROR: Lexer error" << std::endl;
+void formatError(const std::string &message) {
+    std::cerr << "ERROR" << std::endl;
     std::exit(1);
 }
 
@@ -34,26 +31,26 @@ bool isValidIDChar(char c) {
     return std::isalnum(c);
 }
 
-void scanLine(const std::string &line) {
-    if (line.find('!') != std::string::npos) {
-        formatError(line);
-    }
-
+void scanInput(const std::string &input) {
     size_t i = 0;
-    while (i < line.length()) {
-        if (std::isspace(line[i])) {
+
+    while (i < input.length()) {
+        if (std::isspace(input[i])) {
             ++i;
             continue;
         }
 
-        if (line[i] == '/' && i + 1 < line.length() && line[i + 1] == '/') {
-            break;
+        if (input[i] == '/' && i + 1 < input.length() && input[i + 1] == '/') {
+            while (i < input.length() && input[i] != '\n') {
+                ++i;
+            }
+            continue;
         }
 
-        if (isValidIDStart(line[i])) {
+        if (isValidIDStart(input[i])) {
             std::string lexeme;
-            while (i < line.length() && isValidIDChar(line[i])) {
-                lexeme += line[i++];
+            while (i < input.length() && isValidIDChar(input[i])) {
+                lexeme += input[i++];
             }
             if (keywordMap.count(lexeme)) {
                 std::cout << keywordMap[lexeme] << " " << lexeme << std::endl;
@@ -63,25 +60,25 @@ void scanLine(const std::string &line) {
             continue;
         }
 
-        if (std::isdigit(line[i])) {
+        if (std::isdigit(input[i])) {
             std::string num;
-            while (i < line.length() && std::isdigit(line[i])) {
-                num += line[i++];
+            while (i < input.length() && std::isdigit(input[i])) {
+                num += input[i++];
             }
             try {
                 if (std::stoll(num) > 2147483647) {
-                    formatError(line);
+                    formatError("NUM token out of range");
                 }
             } catch (...) {
-                formatError(line);
+                formatError("Invalid NUM token");
             }
             std::cout << "NUM " << num << std::endl;
             continue;
         }
 
-        std::string op(1, line[i]);
-        if (i + 1 < line.length()) {
-            std::string twoCharOp = op + line[i + 1];
+        std::string op(1, input[i]);
+        if (i + 1 < input.length()) {
+            std::string twoCharOp = op + input[i + 1];
             if (operatorMap.count(twoCharOp)) {
                 std::cout << operatorMap[twoCharOp] << " " << twoCharOp << std::endl;
                 i += 2;
@@ -95,20 +92,16 @@ void scanLine(const std::string &line) {
             continue;
         }
 
-        formatError(line);
+        formatError("Invalid token");
     }
 }
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-
-    std::string line;
+    std::string input, line;
     while (std::getline(std::cin, line)) {
-        scanLine(line);
+        input += line + "\n";
     }
-    line.clear();
-    std::quick_exit(0);
-}
 
+    scanInput(input);
+    return 0;
+}
