@@ -1,0 +1,51 @@
+int wain(int* arr, int size) {
+    int* freq = NULL;
+    int i = 0;
+    int maxCount = 0;
+    int maxNum = 0;
+    int index = 0;
+    int count = 0;
+    int num = 0;
+    int freqSize = 483;
+
+    freq = new int[freqSize];
+    
+    while (i < freqSize) {
+        *(freq + i) = 0;
+        i = i + 1;
+    }
+
+    i = 0;
+    while (i < size) {
+        index = *(arr + i) + 241;
+        *(freq + index) = *(freq + index) + 1;
+        i = i + 1;
+    }
+
+    i = 0;
+    while (i < freqSize) {
+        count = *(freq + i);
+        num = i - 241;
+
+        if (count > maxCount) {
+            maxCount = count;
+            maxNum = num;
+        } else {
+            if (count == maxCount) {
+                if (num * num < maxNum * maxNum) {
+                    maxNum = num;
+                } else {
+                    if (num * num == maxNum * maxNum) {
+                        if (num < maxNum) {
+                            maxNum = num;
+                        } else {}
+                    } else {}
+                }
+            } else {}
+        }
+        i = i + 1;
+    }
+
+    delete [] freq;
+    return maxNum;
+}
