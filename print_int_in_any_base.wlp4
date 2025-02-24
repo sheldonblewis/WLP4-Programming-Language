@@ -1,0 +1,47 @@
+int wain(int num, int radix) {
+    int* digits = NULL;
+    int i = 0;
+    int remainder = 0;
+    int result = 0;
+    
+    digits = new int[32];
+
+    if (num < 0) {
+        result = 1;
+    } else {
+        if (radix < 2) {
+            result = 2;
+        } else {
+            if (radix > 36) {
+                result = 2;
+            } else {
+                if (num == 0) {
+                    putchar(48);
+                    putchar(10);
+                } else {
+                    while (num > 0) {
+                        remainder = num % radix;
+                        num = num / radix;
+
+                        if (remainder < 10) {
+                            *(digits + i) = remainder + 48;
+                        } else {
+                            *(digits + i) = remainder + 55;
+                        }
+                        i = i + 1;
+                    }
+
+                    while (i > 0) {
+                        i = i - 1;
+                        putchar(*(digits + i));
+                    }
+
+                    putchar(10);
+                }
+                result = 0;
+            }
+        }
+    }
+    
+    return result;
+}
